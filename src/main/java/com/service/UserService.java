@@ -1,20 +1,14 @@
 package com.service;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
-import com.entity.LikeStore;
 import com.entity.Role;
 import com.exception.AppException;
 import com.exception.ErrorCode;
-import com.repository.LikeStoreRepository;
 import com.repository.RoleRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,8 +34,6 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository  roleRepository;
-    private final LikeStoreService likeStoreService;
-    private final LikeStoreRepository likeStoreRepository;
     public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername()))
             throw new RuntimeException("User existed");
@@ -63,11 +55,8 @@ public class UserService {
         user.setRoles(finalRole);
         user = userRepository.save(user);
 
-        LikeStore likeStore = LikeStore.builder().build();
 
-        likeStore.setUser(user);
 
-        likeStoreRepository.save(likeStore);
 
 
         return userMapper.toUserResponse(user);

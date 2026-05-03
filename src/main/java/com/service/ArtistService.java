@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,14 +35,14 @@ public class ArtistService {
                 .toList();
     }
 
-    public ArtistResponse getById(String id) {
+    public ArtistResponse getById(UUID id) {
         Artist artist = artistRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy artist"));
 
         return artistMapper.toResponse(artist);
     }
 
-    public ArtistResponse update(String id, ArtistRequest request) {
+    public ArtistResponse update(UUID id, ArtistRequest request) {
         Artist artist = artistRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy artist"));
 
@@ -50,7 +51,7 @@ public class ArtistService {
         return artistMapper.toResponse(artistRepository.save(artist));
     }
 
-    public void delete(String id) {
+    public void delete(UUID id) {
         if (!artistRepository.existsById(id)) {
             throw new RuntimeException("Không tìm thấy artist");
         }

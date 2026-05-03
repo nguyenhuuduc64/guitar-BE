@@ -10,4 +10,6 @@ import java.util.UUID;
 @Repository
 public interface ChordRepository extends JpaRepository<Chord, UUID> {
     Optional<Chord> findBySlug(String slug);
+    boolean existsBySlug(String slug);
+
 }

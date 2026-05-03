@@ -2,21 +2,24 @@ package com.service;
 
 import com.dto.request.ChordRequest;
 import com.dto.response.ChordResponse;
+import com.entity.Artist;
 import com.entity.Category;
 import com.entity.Chord;
 import com.mapper.ChordMapper;
+import com.repository.ArtistRepository;
 import com.repository.CategoryRepository;
 import com.repository.ChordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class ChordService {
-
+    private final ArtistRepository artistRepository;
     private final ChordRepository chordRepository;
     private final CategoryRepository categoryRepository;
     private final ChordMapper chordMapper;
@@ -26,12 +29,20 @@ public class ChordService {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        Chord chord = chordMapper.toEntity(request);
+        Artist artist = artistRepository.findById(request.getArtistId())
+                .orElseThrow(() -> new RuntimeException("Artist not found"));
 
-        chord.setCategory(category);
-        chord.setSlug(generateSlug(request.getTitle()));
+        Chord chord = Chord.builder()
+                .title(request.getTitle())
+                .content(request.getContent())
+                .slug(generateSlug(request.getTitle()))
+                .category(category)
+                .artist(artist)
+                .build();
 
-        return chordMapper.toResponse(chordRepository.save(chord));
+        chordRepository.save(chord);
+
+        return chordMapper.toResponse(chord);
     }
 
     public List<ChordResponse> getAll() {
@@ -69,6 +80,21 @@ public class ChordService {
     }
 
     private String generateSlug(String title) {
-        return title.toLowerCase().trim().replaceAll("\\s+", "-");
+        String baseSlug = Normalizer.normalize(title, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+                .toLowerCase()
+                .replaceAll("[^a-z0-9\\s-]", "")
+                .trim()
+                .replaceAll("\\s+", "-");
+
+        String slug = baseSlug;
+        int count = 1;
+
+        while (chordRepository.existsBySlug(slug)) {
+            slug = baseSlug + "-" + count;
+            count++;
+        }
+
+        return slug;
     }
 }

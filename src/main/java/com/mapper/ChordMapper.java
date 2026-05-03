@@ -6,6 +6,7 @@ import com.entity.Chord;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+
 @Mapper(componentModel = "spring")
 public interface ChordMapper {
 
@@ -14,6 +15,8 @@ public interface ChordMapper {
 
     @Mapping(source = "category.id", target = "categoryId")
     @Mapping(source = "category.name", target = "categoryName")
+
+    @Mapping(source = "artist.id", target = "artistId")
     ChordResponse toResponse(Chord chord);
 
     @Mapping(target = "category", ignore = true)

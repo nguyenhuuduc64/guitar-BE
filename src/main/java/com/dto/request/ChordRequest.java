@@ -14,4 +14,5 @@ public class ChordRequest {
     String title;
     String content;
     UUID categoryId;
+    UUID artistId;
 }

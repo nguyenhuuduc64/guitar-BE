@@ -1,6 +1,7 @@
 package com.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.entity.Role;
 import com.exception.AppException;
@@ -84,7 +85,7 @@ public class UserService {
     }
 
     // tra ve User Entity cua DB
-    private User getUserEntityById(String id) {
+    private User getUserEntityById(UUID id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
@@ -94,12 +95,12 @@ public class UserService {
     //returnObject la thong tin cua user lay tu Id
     //uathenticate la thong tin cua nguoi dung nhap hien tai qua jwt
     @PostAuthorize("returnObject.username == authentication.name || hasAuthority('SCOPE_admin')")
-    public UserResponse getUserById(String id) {
+    public UserResponse getUserById(UUID id) {
         User user = getUserEntityById(id);
         return userMapper.toUserResponse(user);
     }
 
-    public UserResponse updateUser(String id, UserUpdateRequest userUpdate) {
+    public UserResponse updateUser(UUID id, UserUpdateRequest userUpdate) {
         User user = getUserEntityById(id);
         userMapper.updateUser(user, userUpdate);
 
@@ -120,7 +121,7 @@ public class UserService {
         return userMapper.toUserResponse(savedUser);
     }
     @Transactional
-    public void deleteUser(String id) {
+    public void deleteUser(UUID id) {
         userRepository.deleteById(id);
     }
 }

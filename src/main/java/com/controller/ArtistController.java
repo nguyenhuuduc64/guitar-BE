@@ -7,6 +7,8 @@ import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/artists")
 @RequiredArgsConstructor
@@ -31,7 +33,7 @@ public class ArtistController {
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<Object> getById(@PathVariable String id) {
+    public ApiResponse<Object> getById(@PathVariable UUID id) {
         return ApiResponse.builder()
                 .result(artistService.getById(id))
                 .build();
@@ -39,7 +41,7 @@ public class ArtistController {
 
     @PutMapping("/{id}")
     public ApiResponse<Object> update(
-            @PathVariable String id,
+            @PathVariable UUID id,
             @RequestBody ArtistRequest request
     ) {
         return ApiResponse.builder()
@@ -48,7 +50,7 @@ public class ArtistController {
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Object> delete(@PathVariable String id) {
+    public ApiResponse<Object> delete(@PathVariable UUID id) {
         artistService.delete(id);
 
         return ApiResponse.builder()

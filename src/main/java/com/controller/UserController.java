@@ -1,6 +1,7 @@
 package com.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -57,7 +58,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    ApiResponse<UserResponse> getUserById(@PathVariable("userId") String userId){
+    ApiResponse<UserResponse> getUserById(@PathVariable("userId") UUID userId){
         return ApiResponse.<UserResponse>builder()
                 .message("get user successfully")
                 .result(userService.getUserById(userId))
@@ -66,12 +67,12 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    UserResponse updateUser(@RequestBody UserUpdateRequest userUpdate, @PathVariable("userId") String userId){
+    UserResponse updateUser(@RequestBody UserUpdateRequest userUpdate, @PathVariable("userId") UUID userId){
         log.info("user update{}", userUpdate);
         return userService.updateUser(userId, userUpdate);
     }
     @DeleteMapping("/{userId}")
-    String  deleteUser(@PathVariable("userId") String userId){
+    String  deleteUser(@PathVariable("userId") UUID userId){
         userService.deleteUser(userId); 
         return "user has been deleted";
     }

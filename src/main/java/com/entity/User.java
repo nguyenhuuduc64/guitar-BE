@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -18,7 +19,7 @@ import java.util.Set;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+    UUID id;
     String username;
     String password;
     String fullName;

@@ -43,10 +43,16 @@ public class ArtistService {
     }
 
     public ArtistResponse update(UUID id, ArtistRequest request) {
+        System.out.println("REQUEST IMAGE URL = " + request.getImageUrl());
         Artist artist = artistRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy artist"));
 
-        artistMapper.update(artist, request);
+        artist.setName(request.getName());
+        artist.setDescription(request.getDescription());
+
+        if (request.getImageUrl() != null) {
+            artist.setImageUrl(request.getImageUrl());
+        }
 
         return artistMapper.toResponse(artistRepository.save(artist));
     }
@@ -56,5 +62,13 @@ public class ArtistService {
             throw new RuntimeException("Không tìm thấy artist");
         }
         artistRepository.deleteById(id);
+    }
+
+    public List<Artist> search(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return artistRepository.findAll();
+        }
+
+        return artistRepository.findByNameContainingIgnoreCase(keyword);
     }
 }

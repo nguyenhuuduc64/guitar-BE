@@ -48,4 +48,8 @@ public class Chord {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @Column(name = "views")
+    @Builder.Default
+    private Long views = 0L;
 }

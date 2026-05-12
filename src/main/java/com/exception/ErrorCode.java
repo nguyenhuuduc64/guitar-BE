@@ -51,8 +51,10 @@ public enum ErrorCode {
 
     RECRUITMENT_NOT_FOUND(500, "recruitment not found", HttpStatus.NOT_FOUND),
 
-    //liek store
-    LIKE_STORE_NOT_FOUND(500, "like store not found", HttpStatus.NOT_FOUND);
+    //Playlist
+    PLAYLIST_NOT_FOUND(5005, "playlist not found", HttpStatus.NOT_FOUND),
+    CHORD_NOT_FOUND(5005, "playlist not found", HttpStatus.NOT_FOUND);
+
     private final int code;
     private final String message;
     private final HttpStatus httpStatus;

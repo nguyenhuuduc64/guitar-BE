@@ -5,15 +5,24 @@ import com.dto.response.ChordResponse;
 import com.entity.Artist;
 import com.entity.Category;
 import com.entity.Chord;
+import com.entity.ChordView;
+import com.exception.AppException;
+import com.exception.ErrorCode;
 import com.mapper.ChordMapper;
 import com.repository.ArtistRepository;
 import com.repository.CategoryRepository;
 import com.repository.ChordRepository;
+import com.repository.ChordViewRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -23,7 +32,7 @@ public class ChordService {
     private final ChordRepository chordRepository;
     private final CategoryRepository categoryRepository;
     private final ChordMapper chordMapper;
-
+    private final ChordViewRepository chordViewRepository;
     public ChordResponse create(ChordRequest request) {
 
         Category category = categoryRepository.findById(request.getCategoryId())
@@ -75,6 +84,12 @@ public class ChordService {
         return chordMapper.toResponse(chordRepository.save(chord));
     }
 
+    public List<ChordResponse> getByArtistId(UUID artistId) {
+
+        return chordRepository.findByArtistId(artistId)
+                .stream().map(chordMapper::toResponse).toList();
+    }
+
     public void delete(UUID id) {
         chordRepository.deleteById(id);
     }
@@ -96,5 +111,71 @@ public class ChordService {
         }
 
         return slug;
+    }
+
+    public List<ChordResponse> getTrendingThisWeek() {
+
+        LocalDateTime fromDate =
+                LocalDateTime.now().minusDays(7);
+
+        List<UUID> chordIds =
+                chordViewRepository
+                        .findTrendingChordIds(fromDate);
+
+        List<Chord> chords =
+                chordRepository.findByIdIn(chordIds);
+
+        return chords.stream()
+                .map(chordMapper::toResponse)
+                .toList();
+    }
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Chord c SET c.views = c.views + 1 WHERE c.id = :id")
+    public void increaseView(
+            UUID chordId,
+            UUID userId
+    ) {
+
+        Chord chord = chordRepository.findById(chordId)
+                .orElseThrow(() ->
+                        new AppException(ErrorCode.CHORD_NOT_FOUND)
+                );
+
+        Optional<ChordView> lastView;
+
+        // USER ĐÃ LOGIN
+        if (userId != null) {
+
+            lastView =
+                    chordViewRepository
+                            .findTopByChord_IdAndUserIdOrderByViewedAtDesc(
+                                    chordId,
+                                    userId
+                            );
+        }
+
+
+
+
+        // TĂNG VIEW
+        Long currentViews =
+                chord.getViews() == null
+                        ? 0L
+                        : chord.getViews();
+
+        chord.setViews(currentViews + 1);
+
+        chordRepository.save(chord);
+
+        // LƯU LỊCH SỬ VIEW
+        ChordView chordView = ChordView.builder()
+                .chord(chord)
+                .userId(userId)
+                .viewedAt(LocalDateTime.now())
+                .build();
+
+        chordViewRepository.save(chordView);
     }
 }

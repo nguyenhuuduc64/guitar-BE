@@ -2,11 +2,13 @@ package com.controller;
 
 import com.dto.request.ApiResponse;
 import com.dto.request.ArtistRequest;
+import com.entity.Artist;
 import com.service.ArtistService;
 import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -26,9 +28,9 @@ public class ArtistController {
     }
 
     @GetMapping("")
-    public ApiResponse<Object> getAll() {
-        return ApiResponse.builder()
-                .result(artistService.getAll())
+    public ApiResponse<List<Artist>> search(@RequestParam(required = false) String keyword) {
+        return ApiResponse.<List<Artist>>builder()
+                .result(artistService.search(keyword))
                 .build();
     }
 

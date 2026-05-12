@@ -26,6 +26,7 @@ public class Artist {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    private String imageUrl;
     @PrePersist
     @PreUpdate
     private void generateSlug() {

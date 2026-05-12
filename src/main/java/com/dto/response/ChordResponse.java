@@ -19,4 +19,5 @@ public class ChordResponse {
     UUID categoryId;
     String categoryName;
     UUID artistId;
+    Long views;
 }
